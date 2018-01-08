@@ -1,0 +1,13 @@
+{
+  "bit": "http-client",
+  
+  "path": "dist/http-client.js",
+  
+  "version": "0.1.0",
+  
+  "author": "Nery Jr",
+  
+  "description": "HTTP client module",
+  
+  "dependencies": []
+}
