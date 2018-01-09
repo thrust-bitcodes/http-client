@@ -14,13 +14,13 @@ function mount_http_request(method, url, params) {
     var fluent = {
         params: (function (pars) {
             params = http.serializeParams(pars)
-            
+
             return fluent
         }).bind(request),
-    
+
         property: (function (property, value) {
             properties[property] = value
-            
+
             return request
         }).bind(request),
 
@@ -40,9 +40,9 @@ function mount_http_request(method, url, params) {
             var inputStream = http_connection.getInputStream()
             var scanner = new Scanner(inputStream, "UTF-8")
             var content = scanner.useDelimiter("\\Z|\\A").next()
-    
+
             scanner.close()
-    
+
             return content
         },
 
@@ -52,27 +52,27 @@ function mount_http_request(method, url, params) {
             if (method.toUpperCase() == "POST") {
                 var output;
 
-                http_connection = new URL(url).openConnection()        
+                http_connection = new URL(url).openConnection()
                 http_connection.setRequestMethod(method)
-                
+
                 Object.keys(properties).forEach(function(prop) {
                     http_connection.setRequestProperty(prop, properties[prop])
                 })
 
                 http_connection.setDoOutput(true)
                 http_connection.setRequestMethod(method)
-                
+
                 try {
                     (output = http_connection.getOutputStream()).write(params.getBytes(properties.charset))
                 } catch(exception) {
                     // if (output)
                     //     output.close()
-                } 
+                }
             } else /* if (method.toUpperCase() == "GET") */ {
                 url += "?" + params
                 http_connection = new URL(url).openConnection()
             }
-            
+
             return fluent.get_content(http_connection)
         }).bind(request)
     }
