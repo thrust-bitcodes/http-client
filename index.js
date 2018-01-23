@@ -4,7 +4,7 @@ var StandardCharsets = Java.type("java.nio.charset.StandardCharsets")
 
 function mount_http_request(method, url, params) {
   var request = this
-  var params = http.serializeParams(params || {})
+  var params = serializeParams(params || {})
   var properties = {
     charset: StandardCharsets.UTF_8,
     "Content-Type": "application/x-www-form-urlencoded"
@@ -12,7 +12,7 @@ function mount_http_request(method, url, params) {
 
   var fluent = {
     params: (function (pars) {
-      params = http.serializeParams(pars)
+      params = serializeParams(pars)
 
       return fluent
     }).bind(request),
@@ -79,6 +79,23 @@ function mount_http_request(method, url, params) {
   return fluent
 }
 
+function serializeParams (obj, prefix) {
+  var str = []
+  var p
+
+  for (p in obj) {
+    if (obj.hasOwnProperty(p)) {
+      var k = prefix ? prefix + '[' + p + ']' : p
+      var v = obj[p]
+
+      str.push((v !== null && typeof v === 'object')
+        ? serializeParams(v, k)
+        : encodeURIComponent(k) + '=' + encodeURIComponent(v))
+    }
+  }
+
+  return str.join('&')
+}
 
 /**
   * Busca informações em uma api REST
