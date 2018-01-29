@@ -2,7 +2,7 @@
   "description": "HTTP client module",
   "name": "http-client",
   "path": "index.js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Nery Jr",
   "dependencies": []
 }
