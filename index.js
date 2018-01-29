@@ -48,7 +48,7 @@ function mount_http_request(method, url, params) {
     fetch: (function _fetch() {
       var http_connection
 
-      if (method.toUpperCase() == "POST") {
+      if (method.toUpperCase() === "POST" || method.toUpperCase() === "PUT") {
         var output;
 
         http_connection = new URL(url).openConnection()
