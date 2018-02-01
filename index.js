@@ -1,10 +1,11 @@
 var Scanner = Java.type("java.util.Scanner")
 var URL = Java.type("java.net.URL")
+var URLConnection = Java.type('java.net.URLConnection')
 var StandardCharsets = Java.type("java.nio.charset.StandardCharsets")
 
-function mount_http_request(method, url, params) {
+function mount_http_request(method, url, reqParams) {
   var request = this
-  var params = serializeParams(params || {})
+  var params = reqParams || {}
   var properties = {
     charset: StandardCharsets.UTF_8,
     "Content-Type": "application/x-www-form-urlencoded"
@@ -12,8 +13,11 @@ function mount_http_request(method, url, params) {
 
   var fluent = {
     params: (function (pars) {
-      params = serializeParams(pars)
-
+      if (isObject(params) && isObject(pars)) {
+        params = merge(params, pars)
+      } else {
+        params = pars
+      }
       return fluent
     }).bind(request),
 
@@ -45,6 +49,15 @@ function mount_http_request(method, url, params) {
       return content
     },
 
+    get_error_content: function(http_connection) {
+      var inputStream = http_connection.getErrorStream()
+      var scanner = new Scanner(inputStream, "UTF-8")
+      var content = scanner.useDelimiter("\\Z|\\A").next()
+      scanner.close()
+
+      return content
+    },
+
     fetch: (function _fetch() {
       var http_connection
 
@@ -52,34 +65,49 @@ function mount_http_request(method, url, params) {
         var output;
 
         http_connection = new URL(url).openConnection()
-        http_connection.setRequestMethod(method)
-
-        Object.keys(properties).forEach(function (prop) {
-          http_connection.setRequestProperty(prop, properties[prop])
-        })
 
         http_connection.setDoOutput(true)
         http_connection.setRequestMethod(method)
 
-        try {
-          (output = http_connection.getOutputStream()).write(params.getBytes(properties.charset))
-        } catch (exception) {
-          // if (output)
-          //     output.close()
+        for (var prop in properties) {
+          http_connection.setRequestProperty(prop, properties[prop])
         }
+
+        if (params && params.constructor.name === 'Object') {
+          if (properties['Content-Type'] === 'application/json') {
+            params = JSON.stringify(params || {})
+          } else if (properties['Content-Type'] === 'application/x-www-form-urlencoded') {
+            params = serializeParams(params || {})
+          }
+        }
+
+        output = http_connection.getOutputStream()
+        output.write(params.getBytes(properties.charset))
       } else /* if (method.toUpperCase() == "GET") */ {
         url += "?" + params
         http_connection = new URL(url).openConnection()
       }
 
-      return fluent.get_content(http_connection)
+      //return fluent.get_content(http_connection)
+
+      var httpCode = http_connection.getResponseCode()
+      var body = {}
+
+      if (httpCode >= 400) {
+        body = fluent.get_error_content(http_connection)
+      }
+      else {
+        body = fluent.get_content(http_connection)
+      }
+
+      return { code: httpCode, body: body }
     }).bind(request)
   }
 
   return fluent
 }
 
-function serializeParams (obj, prefix) {
+function serializeParams(obj, prefix) {
   var str = []
   var p
 
@@ -95,6 +123,17 @@ function serializeParams (obj, prefix) {
   }
 
   return str.join('&')
+}
+
+function merge(obj1, obj2) {
+  var obj3 = {};
+  for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+  for (var objAttrName in obj2) { obj3[objAttrName] = obj2[objAttrName]; }
+  return obj3;
+}
+
+function isObject(val) {
+  return val && typeof val === 'object'
 }
 
 /**
