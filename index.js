@@ -92,10 +92,10 @@ function mount_http_request(method, url, reqParams) {
 
       var httpCode = http_connection.getResponseCode()
       var body = {}
-      let header = {},
+      var header = {},
         headerFields = http_connection.getHeaderFields()
 
-      for (let key in headerFields) {
+      for (var key in headerFields) {
         header[key] = Java.from(headerFields[key]);
       }
 
