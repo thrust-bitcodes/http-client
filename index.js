@@ -92,6 +92,12 @@ function mount_http_request(method, url, reqParams) {
 
       var httpCode = http_connection.getResponseCode()
       var body = {}
+      var header = {},
+        headerFields = http_connection.getHeaderFields()
+
+      for (var key in headerFields) {
+        header[key] = Java.from(headerFields[key]);
+      }
 
       if (httpCode >= 400) {
         body = fluent.get_error_content(http_connection)
@@ -100,7 +106,7 @@ function mount_http_request(method, url, reqParams) {
         body = fluent.get_content(http_connection)
       }
 
-      return { code: httpCode, body: body }
+      return { code: httpCode, body: body, header : header }
     }).bind(request)
   }
 
