@@ -26,7 +26,11 @@ module.exports = {
     "console": true
   },
 
+
   "rules": {
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "no-new-func": "off",
+    "semi": ["error", "never"],
     "accessor-pairs": "error",
     "arrow-spacing": ["error", { "before": true, "after": true }],
     "block-spacing": ["error", "always"],
@@ -50,7 +54,6 @@ module.exports = {
     "func-call-spacing": ["error", "never"],
     "generator-star-spacing": ["error", { "before": true, "after": true }],
     "handle-callback-err": ["error", "^(err|error)$"],
-    "indent": ["error", 2, { "SwitchCase": 1 }],
     "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
     "keyword-spacing": ["error", { "before": true, "after": true }],
     "new-cap": ["error", { "newIsCap": true, "capIsNew": false }],
@@ -103,7 +106,6 @@ module.exports = {
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
     "no-negated-in-lhs": "error",
     "no-new": "error",
-    "no-new-func": "error",
     "no-new-object": "error",
     "no-new-require": "error",
     "no-new-symbol": "error",
@@ -153,10 +155,9 @@ module.exports = {
     "prefer-promise-reject-errors": "error",
     "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
     "rest-spread-spacing": ["error", "never"],
-    "semi": ["error", "never"],
     "semi-spacing": ["error", { "before": false, "after": true }],
     "space-before-blocks": ["error", "always"],
-    "space-before-function-paren": ["error", "always"],
+    "space-before-function-paren": ["error", "never"],
     "space-in-parens": ["error", "never"],
     "space-infix-ops": "error",
     "space-unary-ops": ["error", { "words": true, "nonwords": false }],
@@ -174,4 +175,4 @@ module.exports = {
     "yield-star-spacing": ["error", "both"],
     "yoda": ["error", "never"]
   }
-};
+}
