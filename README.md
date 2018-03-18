@@ -43,7 +43,7 @@ delete(url, params)
 
 ## What's new
 
-v1.1.0 - Adição do método 'headers'
+v1.2.0 - Implementação do método 'headers'
 * Melhoria: adicionado o método 'headers' utilizado para configurar os atributos do HTTP Header através de um único objeto JSON
 * Aumento dos cenários de teste do bitcode
 
