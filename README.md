@@ -20,8 +20,8 @@ let result = httpClient
   // .post('http://localhost:8778/test/pecho', {nome: 'P Paulo', idade: 13})
   .post('http://localhost:8778/test/pecho')
   .headers({
-    Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l',
-    Proxy-Authenticate: 'Basic realm="Access to the internal site"'
+    'Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l',
+    'Proxy-Authenticate': 'Basic realm="Access to the internal site"'
   })
   .params({nome: 'David', idade: 10})
   .charset('UTF-8')
