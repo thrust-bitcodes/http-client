@@ -19,6 +19,10 @@ let httpClient = require('http-client')
 let result = httpClient
   // .post('http://localhost:8778/test/pecho', {nome: 'P Paulo', idade: 13})
   .post('http://localhost:8778/test/pecho')
+  .headers({
+    Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l',
+    Proxy-Authenticate: 'Basic realm="Access to the internal site"'
+  })
   .params({nome: 'David', idade: 10})
   .charset('UTF-8')
   .contentType('application/json')
@@ -38,6 +42,10 @@ delete(url, params)
 ```
 
 ## What's new
+
+v1.1.0 - Adição do método 'headers'
+* Melhoria: adicionado o método 'headers' utilizado para configurar os atributos do HTTP Header através de um único objeto JSON
+* Aumento dos cenários de teste do bitcode
 
 v1.1.0 - Correções e melhorias do GET e inserção da Suite Teste Case para o bitcode
 * Correção do objeto 'header' que estava com todos os valores em formato array de string e deveriam estar em string.

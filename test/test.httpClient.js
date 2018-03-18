@@ -72,6 +72,27 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
         expect(rs.body.id).to.not.equal(undefined)
         expect(rs.body).to.include({ 'title': 'foo', 'body': 'bar' })
       })
+
+      it('Método POST utilizando [.headers]', function() {
+        rs = httpClient.post('https://jsonplaceholder.typicode.com/posts')
+          .headers({
+            'origin': 'chrome-extension://aejoelaoggembcahagimdiliamlcdmfm',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+            'Content-Type': 'application/json; charset=UTF-8'
+          })
+          .params({
+            'title': 'foo',
+            'body': 'bar',
+            'userId': 1
+          })
+          .fetch()
+
+        expect(rs.code).to.equal(201)
+        expect(rs.body).to.have.own.property('id')
+        expect(rs.body).to.have.own.property('userId')
+        expect(rs.body.id).to.not.equal(undefined)
+        expect(rs.body).to.include({ 'title': 'foo', 'body': 'bar' })
+      })
     })
   })
 }

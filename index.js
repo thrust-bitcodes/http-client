@@ -25,6 +25,12 @@ function mountHttpRequest(method, url, reqParams) {
       return fluent
     },
 
+    headers: function(headers) {
+      properties = Object.assign({}, properties, headers)
+
+      return fluent
+    },
+
     charset: function(value) {
       properties['Accept-Charset'] = value
 
@@ -43,6 +49,7 @@ function mountHttpRequest(method, url, reqParams) {
       var content = scanner.useDelimiter('\\Z|\\A').next()
 
       scanner.close()
+      inputStream.close()
 
       return content
     },
@@ -53,6 +60,7 @@ function mountHttpRequest(method, url, reqParams) {
       var content = scanner.useDelimiter('\\Z|\\A').next()
 
       scanner.close()
+      inputStream.close()
 
       return content
     },
@@ -79,6 +87,8 @@ function mountHttpRequest(method, url, reqParams) {
             params = JSON.stringify(params || {})
           } else if (properties['Content-Type'] === 'application/x-www-form-urlencoded') {
             params = serializeParams(params || {})
+          } else {
+            params = JSON.stringify(params)
           }
         }
 
