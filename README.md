@@ -39,7 +39,7 @@ delete(url, params)
 
 ## What's new
 
-v1.1.0 - Correções e melhorias
+v1.1.0 - Correções e melhorias do GET e inserção da Suite Teste Case para o bitcode
 * Correção do objeto 'header' que estava com todos os valores em formato array de string e deveriam estar em string.
 * Correção para o método GET quando o mesmo não recebe parâmetros.
 * Correção dos testes de validação do 'Content-Type' de === para indexOf, haja visto que o charset pode ser definido nesta propriedade, o que é bastante comum.
