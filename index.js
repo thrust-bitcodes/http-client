@@ -101,6 +101,10 @@ function mountHttpRequest(method, url, reqParams) {
           url += '?' + params
         }
         httpConnection = new URL(url).openConnection()
+
+        for (var prp in properties) {
+          httpConnection.setRequestProperty(prp, properties[prp])
+        }
       }
 
       var httpCode = httpConnection.getResponseCode()
