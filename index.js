@@ -3,7 +3,7 @@ var URL = Java.type('java.net.URL')
 var StandardCharsets = Java.type('java.nio.charset.StandardCharsets')
 
 function mountHttpRequest(method, url, reqParams) {
-  var params = reqParams || {}
+  var params = reqParams
   var properties = {
     'charset': StandardCharsets.UTF_8,
     'Content-Type': 'application/x-www-form-urlencoded'
@@ -11,8 +11,8 @@ function mountHttpRequest(method, url, reqParams) {
 
   var fluent = {
     params: function(pars) {
-      if (isObject(params) && isObject(pars)) {
-        params = merge(params, pars)
+      if ((isObject(params) || params === undefined) && isObject(pars)) {
+        params = merge((params || {}), pars)
       } else {
         params = pars
       }
@@ -84,20 +84,20 @@ function mountHttpRequest(method, url, reqParams) {
 
         if (params && params.constructor.name === 'Object') {
           if (properties['Content-Type'].indexOf('application/json') >= 0) {
-            params = JSON.stringify(params || {})
+            params = JSON.stringify(params)
           } else if (properties['Content-Type'] === 'application/x-www-form-urlencoded') {
-            params = serializeParams(params || {})
+            params = serializeParams(params)
           } else {
             params = JSON.stringify(params)
           }
         }
 
         output = httpConnection.getOutputStream()
-        output.write(params.getBytes(properties.charset))
+        output.write((params || '').getBytes(properties.charset))
       } else /* if (method.toUpperCase() == "GET") */ {
         if (params && params.constructor.name === 'Object') {
           url += '?' + serializeParams(params)
-        } else {
+        } else if (params !== undefined) {
           url += '?' + params
         }
         httpConnection = new URL(url).openConnection()

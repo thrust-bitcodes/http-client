@@ -43,6 +43,9 @@ delete(url, params)
 
 ## What's new
 
+v1.3.1 - Fix: Método GET chamado com query-string na URL estava com erro
+* Método GET quando iniciado com query-string e sem parâmetros estava com erro
+
 v1.3.0 - Fix: os _headers_ configurados pelos métodos [headers] e [property] não estão sendo aplicados para o método GET
 * Correção para que os _headers_ sejam aplicados para o método GET
 * Definição do _user-agent_ a ser utilizado pelo thrust no cabeçalho HTTP<br>
