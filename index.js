@@ -125,7 +125,7 @@ function mountHttpRequest(method, url, reqParams) {
           : data
       }
 
-      return { code: httpCode, body: body, header: header }
+      return { code: httpCode, body: body, headers: header }
     }
   }
 
