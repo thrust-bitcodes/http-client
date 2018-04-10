@@ -56,6 +56,11 @@ function mountHttpRequest(method, url, reqParams) {
 
     getErrorContent: function(httpConnection) {
       var inputStream = httpConnection.getErrorStream()
+
+      if(!inputStream) {
+        return undefined
+      }
+
       var scanner = new Scanner(inputStream, 'UTF-8')
       var content = scanner.useDelimiter('\\Z|\\A').next()
 

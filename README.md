@@ -43,6 +43,8 @@ delete(url, params)
 
 ## What's new
 
+v1.3.2 - Fix: Quando uma requisição retorna com erro, o atributo "body" no objeto de retorno fica com o valor _undefined_.
+
 v1.3.1 - Fix: Método GET chamado com query-string na URL estava com erro
 * Método GET quando iniciado com query-string e sem parâmetros estava com erro
 
