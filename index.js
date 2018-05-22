@@ -10,7 +10,7 @@ function mountHttpRequest(method, url, reqParams) {
   }
 
   var fluent = {
-    params: function(pars) {
+    params: function (pars) {
       if ((isObject(params) || params === undefined) && isObject(pars)) {
         params = merge((params || {}), pars)
       } else {
@@ -19,55 +19,50 @@ function mountHttpRequest(method, url, reqParams) {
       return fluent
     },
 
-    property: function(property, value) {
+    property: function (property, value) {
       properties[property] = value
 
       return fluent
     },
 
-    headers: function(headers) {
+    headers: function (headers) {
       properties = Object.assign({}, properties, headers)
 
       return fluent
     },
 
-    charset: function(value) {
+    charset: function (value) {
       properties['Accept-Charset'] = value
 
       return fluent
     },
 
-    contentType: function(value) {
+    contentType: function (value) {
       properties['Content-Type'] = value
 
       return fluent
     },
 
-    getContent: function(httpConnection) {
-      var inputStream = httpConnection.getInputStream()
-      var scanner = new Scanner(inputStream, 'UTF-8')
-      var content = scanner.useDelimiter('\\Z|\\A').next()
+    getContent: function (httpConnection) {
+      var inputStream;
+      var scanner;
 
-      scanner.close()
-      inputStream.close()
+      try {
+        inputStream = httpConnection.getErrorStream();
 
-      return content
-    },
+        if (!inputStream) {
+          inputStream = httpConnection.getInputStream();
+        }
 
-    getErrorContent: function(httpConnection) {
-      var inputStream = httpConnection.getErrorStream()
+        scanner = new Scanner(inputStream, 'UTF-8').useDelimiter('\\Z|\\A');
 
-      if(!inputStream) {
-        return undefined
+        if (scanner.hasNext()) {
+          return scanner.next();
+        }
+      } finally {
+        scanner && scanner.close()
+        inputStream && inputStream.close()
       }
-
-      var scanner = new Scanner(inputStream, 'UTF-8')
-      var content = scanner.useDelimiter('\\Z|\\A').next()
-
-      scanner.close()
-      inputStream.close()
-
-      return content
     },
 
     fetch: function _fetch() {
@@ -99,7 +94,7 @@ function mountHttpRequest(method, url, reqParams) {
 
         output = httpConnection.getOutputStream()
         output.write((params || '').getBytes(properties.charset))
-      } else /* if (method.toUpperCase() == "GET") */ {
+      } else {
         if (params && params.constructor.name === 'Object') {
           url += '?' + serializeParams(params)
         } else if (params !== undefined) {
@@ -120,15 +115,10 @@ function mountHttpRequest(method, url, reqParams) {
         header[key] = headerFields[key][0]
       }
 
-      if (httpCode >= 400) {
-        body = fluent.getErrorContent(httpConnection)
-      } else {
-        var data = fluent.getContent(httpConnection)
+      var data = fluent.getContent(httpConnection)
+      var isJSON = data && (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0);
 
-        body = (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0)
-          ? JSON.parse(data)
-          : data
-      }
+      body = isJSON ? JSON.parse(data) : data
 
       return { code: httpCode, body: body, headers: header }
     }
@@ -176,10 +166,10 @@ function isObject(val) {
   * HTTPClient.post("http://localhost:8080/test/hello").fetch()
   */
 var HTTPClient = {
-  get: function(url, params) { return mountHttpRequest('GET', url, params) },
-  post: function(url, params) { return mountHttpRequest('POST', url, params) },
-  put: function(url, params) { return mountHttpRequest('PUT', url, params) },
-  delete: function(url, params) { return mountHttpRequest('DELETE', url, params) }
+  get: function (url, params) { return mountHttpRequest('GET', url, params) },
+  post: function (url, params) { return mountHttpRequest('POST', url, params) },
+  put: function (url, params) { return mountHttpRequest('PUT', url, params) },
+  delete: function (url, params) { return mountHttpRequest('DELETE', url, params) }
 }
 
 exports = HTTPClient

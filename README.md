@@ -1,4 +1,5 @@
 HttpClient
+[![Build Status](https://travis-ci.org/thrust-bitcodes/http-client.svg?branch=master)](https://travis-ci.org/thrust-bitcodes/http-client) [![GitHub release](https://img.shields.io/github/release/thrust-bitcodes/http-client.svg)](https://github.com/thrust-bitcodes/http-client/releases)
 ===============
 
 HttpClient é um *bitcode* de acesso HTTP e HTTPS para [ThrustJS](https://github.com/thrustjs/thrust).
@@ -42,6 +43,8 @@ delete(url, params)
 ```
 
 ## What's new
+
+v1.3.3 - Fix: Ajustando leitura do retorno e tratando requisições sem retorno.
 
 v1.3.2 - Fix: Quando uma requisição retorna com erro, o atributo "body" no objeto de retorno fica com o valor _undefined_.
 
