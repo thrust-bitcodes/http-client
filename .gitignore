@@ -3,5 +3,6 @@ tomcat.*
 *.java
 .eslintrc
 .eslintrc.json
-teste.js
+
+/test/.lib
 
