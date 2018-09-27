@@ -108,7 +108,7 @@ function mountHttpRequest(method, url, reqParams) {
           httpConnection.setRequestProperty(prop, properties[prop])
         }
 
-        if (params && params.constructor.name === 'Object') {
+        if (params && params.constructor && params.constructor.name === 'Object') {
           if (properties['Content-Type'].indexOf('application/json') >= 0) {
             params = JSON.stringify(params)
           } else if (properties['Content-Type'] === 'application/x-www-form-urlencoded') {
@@ -129,7 +129,7 @@ function mountHttpRequest(method, url, reqParams) {
         }
 
       } else {
-        if (params && params.constructor.name === 'Object') {
+        if (params && params.constructor && params.constructor.name === 'Object') {
           url += '?' + serializeParams(params)
         } else if (params !== undefined) {
           url += '?' + params
