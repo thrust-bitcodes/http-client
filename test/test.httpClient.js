@@ -44,7 +44,7 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
 
         expect(rs.code).to.equal(200)
         expect(rs.body).to.be.an('array')
-        expect(rs.body.length).to.equal(100)
+        expect(rs.body.length).to.equal(101)
       })
 
       it('Executando método GET retornando um objeto json', function () {
