@@ -72,6 +72,14 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
         expect(rs.body.headers.app).to.equal('thrust')
       })
 
+      it('GET com disable de certificado', function () {
+        rs = httpClient
+          .get('https://postman-echo.com/status/200')
+          .disableCertificateValidation()
+          .fetch()
+
+        expect(rs.code).to.equal(200)
+      })
     })
     describe('Método [POST]', function () {
 
@@ -160,21 +168,13 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
 
 function executaEMostraTempo(fn) {
   var di = new Date().getTime()
-  var result = fn();
+  var result = fn()
   var df = new Date().getTime()
 
   print('\tTempo de execução:', (df - di), 'ms.')
 
-  return result;
+  return result
 }
 
 var res = majesty.run(exec)
-
-print('', res.success.length, ' scenarios executed with success and')
-print('', res.failure.length, ' scenarios executed with failure.\n')
-
-res.failure.forEach(function (fail) {
-  print("[" + fail.scenario + "] =>", fail.execption)
-})
-
-exit(res.failure.length);
+exit(res.failure.length)

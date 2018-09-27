@@ -24,6 +24,7 @@ let result = httpClient
     'Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l',
     'Proxy-Authenticate': 'Basic realm="Access to the internal site"'
   })
+  .disableCertificateValidation() //Usado quando o endpoint é acessado via https certificado e não temos o certificado para validação
   .params({nome: 'David', idade: 10})
   .charset('UTF-8')
   .contentType('application/json')
