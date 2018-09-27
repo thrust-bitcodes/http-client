@@ -1,6 +1,7 @@
 var Scanner = Java.type('java.util.Scanner')
 var URL = Java.type('java.net.URL')
 var StandardCharsets = Java.type('java.nio.charset.StandardCharsets')
+var Byte = Java.type('byte[]')
 
 var HttpsURLConnection = Java.type('javax.net.ssl.HttpsURLConnection')
 var SSLContext = Java.type('javax.net.ssl.SSLContext')
@@ -118,7 +119,15 @@ function mountHttpRequest(method, url, reqParams) {
         }
 
         output = httpConnection.getOutputStream()
-        output.write((params || '').getBytes(properties.charset))
+
+        let isBinary = properties['Content-Type'].indexOf('application/zip') > -1 || properties['Content-Type'].indexOf('application/octet-stream') > -1
+
+        if (!params || typeof params === 'string') {
+          output.write((params || '').getBytes(properties.charset))
+        } else if (isBinary) {
+          copyStreams(params, output)
+        }
+
       } else {
         if (params && params.constructor.name === 'Object') {
           url += '?' + serializeParams(params)
@@ -158,6 +167,14 @@ function mountHttpRequest(method, url, reqParams) {
   }
 
   return fluent
+}
+
+function copyStreams(inStream, outStream) {
+  let buffer = new Byte(1024)
+  let len
+  while ((len = inStream.read(buffer)) !== -1) {
+    outStream.write(buffer, 0, len)
+  }
 }
 
 function serializeParams(obj, prefix) {
