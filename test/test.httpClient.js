@@ -22,6 +22,23 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
   // beforeEach(function() { })
 
   describe('Client HTTP e HTTPS para thrust', function() {
+    describe('Método [GET] Firebase Functions', function() {
+      it('Executando método GET retornando um objeto JSON', function() {
+        var token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjMwNDZhMTU2MzczNjZiNGQ2NGQ5YTVhYmIzMzczMTgyYmE0ZDdjZmIifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZmlyZWZpcnN0LTg3NzgiLCJhdWQiOiJmaXJlZmlyc3QtODc3OCIsImF1dGhfdGltZSI6MTUyNTAwNTEzMSwidXNlcl9pZCI6IjU2eVIwZGRMRW9Ua2FYWmRnTTY0cmVScnBadzEiLCJzdWIiOiI1NnlSMGRkTEVvVGthWFpkZ002NHJlUnJwWncxIiwiaWF0IjoxNTI1MDA5MjIyLCJleHAiOjE1MjUwMTI4MjIsImVtYWlsIjoibmVyeUBzb2Z0Ym94LmNvbS5iciIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJuZXJ5QHNvZnRib3guY29tLmJyIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.t_Q0ZbMTPUxJTjpzIV9fylMuv0s0kRmHd3nUfMQ86z668iY4kf95-S6_5y-JUN2vb71kBaSmBCzakKnP8aYgcLTRw40OZPN_v7zR0GaQF_i3CqYDWIFxd6nYpH_hK5Ma69ukLzk9-8O5JL9stOrZpp_eBwtAu67SZUnrsvVTZ_jse7EGspNkQqZOFQP_A-tgcGVTOlww16PzMKW83DMUGXxANehAZdpfVNcGCG7_eI12bzbP14eCnmnp3ljtYI2iEXg7mhw3anVop4THaaGvwjj3y3z7mCI9CFkrxTjs_PeOcK7B4-0q0_3qpKlH2pmtJG6dqDvSqBCkt381WzTxig'
+        rs = httpClient.get('https://us-central1-firefirst-8778.cloudfunctions.net/crud/777')
+          .headers({
+            'user-agent': 'thrustBot-http-client/1.3.0',
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer ' + token
+          })
+          .fetch()
+
+        expect(rs.code).to.equal(200)
+        expect(rs.body).to.be.an('object')
+        expect(rs.body).to.have.own.property('id')
+        expect(rs.body.id).to.equal('777')
+      })
+    })
     describe('Método [GET]', function() {
       it('Executando método GET retornando um array de objetos json', function() {
         rs = httpClient.get('https://jsonplaceholder.typicode.com/posts')
@@ -131,7 +148,7 @@ res.failure.forEach(function(fail) {
   print('[' + fail.scenario + '] =>', fail.execption)
   var i = 0
   if (fail.execption.printStackTrace && i === 0) {
-    // fail.execption.printStackTrace()
+    fail.execption.printStackTrace()
     i++
   }
 })

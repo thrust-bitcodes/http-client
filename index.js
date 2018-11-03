@@ -1,6 +1,12 @@
 var Scanner = Java.type('java.util.Scanner')
 var URL = Java.type('java.net.URL')
 var StandardCharsets = Java.type('java.nio.charset.StandardCharsets')
+var Byte = Java.type('byte[]')
+
+var HttpsURLConnection = Java.type('javax.net.ssl.HttpsURLConnection')
+var SSLContext = Java.type('javax.net.ssl.SSLContext')
+var X509TrustManager = Java.type('javax.net.ssl.X509TrustManager')
+var SecureRandom = Java.type('java.security.SecureRandom')
 
 function mountHttpRequest(method, url, reqParams) {
   var params = reqParams
@@ -44,31 +50,51 @@ function mountHttpRequest(method, url, reqParams) {
     },
 
     getContent: function(httpConnection) {
-      var inputStream = httpConnection.getInputStream()
-      var scanner = new Scanner(inputStream, 'UTF-8')
-      var content = scanner.useDelimiter('\\Z|\\A').next()
+      var inputStream;
+      var scanner;
 
-      scanner.close()
-      inputStream.close()
+      try {
+        inputStream = httpConnection.getErrorStream();
 
-      return content
+        if (!inputStream) {
+          inputStream = httpConnection.getInputStream();
+        }
+
+        scanner = new Scanner(inputStream, 'UTF-8').useDelimiter('\\Z|\\A');
+
+        if (scanner.hasNext()) {
+          return scanner.next();
+        }
+      } finally {
+        scanner && scanner.close()
+        inputStream && inputStream.close()
+      }
     },
 
-    getErrorContent: function(httpConnection) {
-      var inputStream = httpConnection.getErrorStream()
-      var scanner = new Scanner(inputStream, 'UTF-8')
-      var content = scanner.useDelimiter('\\Z|\\A').next()
+    disableCertificateValidation: function() {
+      var trustAllCerts = new X509TrustManager({
+        getAcceptedIssuers: function() {
+          return null
+        },
+        checkClientTrusted: function(certs, authType) {
+        },
+        checkServerTrusted: function(certs, authType) {
+        }
+      })
 
-      scanner.close()
-      inputStream.close()
+      HttpsURLConnection.setDefaultHostnameVerifier(function(hostname, sslSession) {
+        return true
+      })
 
-      return content
+      var sc = SSLContext.getInstance('SSL')
+      sc.init(null, [trustAllCerts], new SecureRandom())
+      HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory())
+
+      return fluent
     },
 
     fetch: function _fetch() {
       var httpConnection
-      var header = {}
-      var body = {}
 
       if (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT') {
         var output
@@ -82,7 +108,7 @@ function mountHttpRequest(method, url, reqParams) {
           httpConnection.setRequestProperty(prop, properties[prop])
         }
 
-        if (params && params.constructor.name === 'Object') {
+        if (params && params.constructor && params.constructor.name === 'Object') {
           if (properties['Content-Type'].indexOf('application/json') >= 0) {
             params = JSON.stringify(params)
           } else if (properties['Content-Type'] === 'application/x-www-form-urlencoded') {
@@ -93,9 +119,17 @@ function mountHttpRequest(method, url, reqParams) {
         }
 
         output = httpConnection.getOutputStream()
-        output.write((params || '').getBytes(properties.charset))
-      } else /* if (method.toUpperCase() == "GET") */ {
-        if (params && params.constructor.name === 'Object') {
+
+        let isBinary = properties['Content-Type'].indexOf('application/zip') > -1 || properties['Content-Type'].indexOf('application/octet-stream') > -1
+
+        if (!params || typeof params === 'string') {
+          output.write((params || '').getBytes(properties.charset))
+        } else if (isBinary) {
+          copyStreams(params, output)
+        }
+
+      } else {
+        if (params && params.constructor && params.constructor.name === 'Object') {
           url += '?' + serializeParams(params)
         } else if (params !== undefined) {
           url += '?' + params
@@ -107,29 +141,40 @@ function mountHttpRequest(method, url, reqParams) {
         }
       }
 
-      var httpCode = httpConnection.getResponseCode()
-      var headerFields = httpConnection.getHeaderFields()
+      var httpCode = 500
+      var header = {}
+      var body = {}
+      var exc
 
-      for (var key in headerFields) {
-        // header[key] = Java.from(headerFields[key])
-        header[key] = headerFields[key][0]
-      }
+      try {
+        httpCode = httpConnection.getResponseCode()
+        var headerFields = httpConnection.getHeaderFields()
 
-      if (httpCode >= 400) {
-        body = fluent.getErrorContent(httpConnection)
-      } else {
+        for (var key in headerFields) {
+          header[key] = headerFields[key][0]
+        }
+
         var data = fluent.getContent(httpConnection)
+        var isJSON = data && (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0);
 
-        body = (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0)
-          ? JSON.parse(data)
-          : data
+        body = isJSON ? JSON.parse(data) : data
+      } catch (e) {
+        exc = e
       }
 
-      return { code: httpCode, body: body, headers: header }
+      return { code: httpCode, body: body, headers: header, exc: exc }
     }
   }
 
   return fluent
+}
+
+function copyStreams(inStream, outStream) {
+  let buffer = new Byte(1024)
+  let len
+  while ((len = inStream.read(buffer)) !== -1) {
+    outStream.write(buffer, 0, len)
+  }
 }
 
 function serializeParams(obj, prefix) {
