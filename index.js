@@ -50,20 +50,20 @@ function mountHttpRequest(method, url, reqParams) {
     },
 
     getContent: function(httpConnection) {
-      var inputStream;
-      var scanner;
+      var inputStream
+      var scanner
 
       try {
-        inputStream = httpConnection.getErrorStream();
+        inputStream = httpConnection.getErrorStream()
 
         if (!inputStream) {
-          inputStream = httpConnection.getInputStream();
+          inputStream = httpConnection.getInputStream()
         }
 
-        scanner = new Scanner(inputStream, 'UTF-8').useDelimiter('\\Z|\\A');
+        scanner = new Scanner(inputStream, 'UTF-8').useDelimiter('\\Z|\\A')
 
         if (scanner.hasNext()) {
-          return scanner.next();
+          return scanner.next()
         }
       } finally {
         scanner && scanner.close()
@@ -127,7 +127,6 @@ function mountHttpRequest(method, url, reqParams) {
         } else if (isBinary) {
           copyStreams(params, output)
         }
-
       } else {
         if (params && params.constructor && params.constructor.name === 'Object') {
           url += '?' + serializeParams(params)
@@ -155,7 +154,7 @@ function mountHttpRequest(method, url, reqParams) {
         }
 
         var data = fluent.getContent(httpConnection)
-        var isJSON = data && (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0);
+        var isJSON = data && (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0)
 
         body = isJSON ? JSON.parse(data) : data
       } catch (e) {

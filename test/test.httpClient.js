@@ -21,6 +21,7 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
   // afterEach(function() { })
   // beforeEach(function() { })
 
+<<<<<<< HEAD
   describe('Client HTTP e HTTPS para thrust', function() {
     describe('Método [GET] Firebase Functions', function() {
       it('Executando método GET retornando um objeto JSON', function() {
@@ -41,15 +42,35 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
     })
     describe('Método [GET]', function() {
       it('Executando método GET retornando um array de objetos json', function() {
+=======
+  describe('Client HTTP e HTTPS para thrust', function () {
+    describe('Método [GET]', function () {
+      it('GET com retorno 404', function () {
+        rs = httpClient.get('https://postman-echo.com/status/404')
+          .fetch()
+
+        expect(rs.code).to.equal(404)
+      })
+
+      it('GET com retorno 500', function () {
+        rs = httpClient.get('https://postman-echo.com/status/500')
+          .fetch()
+
+        expect(rs.code).to.equal(500)
+      })
+
+      it('Executando método GET retornando um array de objetos json', function () {
+>>>>>>> 87338d182d01395a77642522fabed716ff21fe75
         rs = httpClient.get('https://jsonplaceholder.typicode.com/posts')
           .charset('UTF-8')
           .fetch()
 
         expect(rs.code).to.equal(200)
         expect(rs.body).to.be.an('array')
-        expect(rs.body.length).to.equal(100)
+        expect(rs.body.length).to.equal(101)
       })
-      it('Executando método GET retornando um objeto json', function() {
+
+      it('Executando método GET retornando um objeto json', function () {
         rs = httpClient.get('https://jsonplaceholder.typicode.com/posts/1')
           .charset('UTF-8')
           .fetch()
@@ -58,7 +79,7 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
         expect(rs.body.id).to.equal(1)
       })
 
-      it('Método GET utilizando [.headers]', function() {
+      it('Método GET utilizando [.headers]', function () {
 
         rs = httpClient.get('https://postman-echo.com/headers')
           .headers({
@@ -74,29 +95,45 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
         expect(rs.body.headers.app).to.equal('thrust')
       })
 
-      it('Executando método POST inserindo um objeto json', function() {
-        var di = new Date().getTime()
-
-        rs = httpClient.post('https://reqres.in/api/users')
-          .property('user-agent', 'thrustBot-http-client/1.3.0')
-          .contentType('application/json')
-          .params({
-            'name': 'thrust',
-            'job': 'platform'
-          })
+      it('GET com disable de certificado', function () {
+        rs = httpClient
+          .get('https://postman-echo.com/status/200')
+          .disableCertificateValidation()
           .fetch()
 
-        var df = new Date().getTime()
+        expect(rs.code).to.equal(200)
+      })
+    })
+    describe('Método [POST]', function () {
+
+      it('POST com retorno 404', function () {
+        rs = executaEMostraTempo(function () {
+          return httpClient.post('https://postman-echo.com/status/404')
+            .fetch()
+
+          expect(rs.code).to.equal(404)
+        })
+      })
+
+      it('Executando método POST inserindo um objeto json', function () {
+        rs = executaEMostraTempo(function () {
+          return httpClient.post('https://reqres.in/api/users')
+            .property('user-agent', 'thrustBot-http-client/1.3.0')
+            .contentType('application/json')
+            .params({
+              'name': 'thrust',
+              'job': 'platform'
+            })
+            .fetch()
+        })
 
         expect(rs.code).to.equal(201)
         expect(rs.body).to.have.own.property('id')
         expect(rs.body.id).to.not.equal(undefined)
         expect(rs.body).to.include({ 'name': 'thrust', 'job': 'platform' })
-
-        print('\tTempo de execução:', (df - di), 'ms.')
       })
 
-      it('Executando método POST (site 2) inserindo um objeto json', function() {
+      it('Executando método POST (site 2) inserindo um objeto json', function () {
         rs = httpClient.post('https://jsonplaceholder.typicode.com/posts')
           .property('user-agent', 'thrustBot-http-client/1.3.0')
           .contentType('application/json; charset=UTF-8')
@@ -114,7 +151,7 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
         expect(rs.body).to.include({ 'title': 'foo', 'body': 'bar' })
       })
 
-      it('Método POST utilizando [.headers]', function() {
+      it('Método POST utilizando [.headers]', function () {
         rs = httpClient.post('https://jsonplaceholder.typicode.com/posts')
           .headers({
             'origin': 'chrome-extension://aejoelaoggembcahagimdiliamlcdmfm',
@@ -135,15 +172,31 @@ function exec(describe, it, beforeEach, afterEach, expect, should, assert) {
         expect(rs.body.id).to.not.equal(undefined)
         expect(rs.body).to.include({ 'title': 'foo', 'body': 'bar' })
       })
+
+      it('Método POST sem body no retorno', function () {
+        rs = executaEMostraTempo(function () {
+          return httpClient.post('https://mockbin.org/echo')
+            .headers({
+              'Accept': 'application/json'
+            })
+            .fetch()
+        })
+
+        expect(rs.code).to.equal(200)
+        expect(rs.body).to.equal(undefined)
+      })
     })
   })
 }
 
-var res = majesty.run(exec)
+function executaEMostraTempo(fn) {
+  var di = new Date().getTime()
+  var result = fn()
+  var df = new Date().getTime()
 
-print('', res.success.length, ' scenarios executed with success and')
-print('', res.failure.length, ' scenarios executed with failure.\n')
+  print('\tTempo de execução:', (df - di), 'ms.')
 
+<<<<<<< HEAD
 res.failure.forEach(function(fail) {
   print('[' + fail.scenario + '] =>', fail.execption)
   var i = 0
@@ -152,5 +205,10 @@ res.failure.forEach(function(fail) {
     i++
   }
 })
+=======
+  return result
+}
+>>>>>>> 87338d182d01395a77642522fabed716ff21fe75
 
-// java.lang.Runtime.getRuntime().exec("cmd /k chcp 65001");
+var res = majesty.run(exec)
+exit(res.failure.length)

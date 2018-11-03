@@ -1,4 +1,5 @@
 HttpClient
+[![Build Status](https://travis-ci.org/thrust-bitcodes/http-client.svg?branch=master)](https://travis-ci.org/thrust-bitcodes/http-client) [![GitHub release](https://img.shields.io/github/release/thrust-bitcodes/http-client.svg)](https://github.com/thrust-bitcodes/http-client/releases)
 ===============
 
 HttpClient é um *bitcode* de acesso HTTP e HTTPS para [ThrustJS](https://github.com/thrustjs/thrust).
@@ -23,6 +24,7 @@ let result = httpClient
     'Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l',
     'Proxy-Authenticate': 'Basic realm="Access to the internal site"'
   })
+  .disableCertificateValidation() //Usado quando o endpoint é acessado via https certificado e não temos o certificado para validação
   .params({nome: 'David', idade: 10})
   .charset('UTF-8')
   .contentType('application/json')
@@ -42,6 +44,10 @@ delete(url, params)
 ```
 
 ## What's new
+
+v1.3.3 - Fix: Ajustando leitura do retorno e tratando requisições sem retorno.
+
+v1.3.2 - Fix: Quando uma requisição retorna com erro, o atributo "body" no objeto de retorno fica com o valor _undefined_.
 
 v1.3.1 - Fix: Método GET chamado com query-string na URL estava com erro
 * Método GET quando iniciado com query-string e sem parâmetros estava com erro
