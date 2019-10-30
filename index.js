@@ -1,6 +1,5 @@
 var Scanner = Java.type('java.util.Scanner')
 var URL = Java.type('java.net.URL')
-var StandardCharsets = Java.type('java.nio.charset.StandardCharsets')
 var Byte = Java.type('byte[]')
 
 var HttpsURLConnection = Java.type('javax.net.ssl.HttpsURLConnection')
@@ -11,7 +10,7 @@ var SecureRandom = Java.type('java.security.SecureRandom')
 function mountHttpRequest(method, url, reqParams) {
   var params = reqParams
   var properties = {
-    'charset': StandardCharsets.UTF_8,
+    'charset': 'utf-8',
     'Content-Type': 'application/x-www-form-urlencoded'
   }
 
@@ -60,7 +59,7 @@ function mountHttpRequest(method, url, reqParams) {
           inputStream = httpConnection.getInputStream()
         }
 
-        scanner = new Scanner(inputStream, 'UTF-8').useDelimiter('\\Z|\\A')
+        scanner = new Scanner(inputStream, 'utf-8').useDelimiter('\\Z|\\A')
 
         if (scanner.hasNext()) {
           return scanner.next()
@@ -147,30 +146,29 @@ function mountHttpRequest(method, url, reqParams) {
 
       try {
         httpCode = httpConnection.getResponseCode()
-        var headerFields = httpConnection.getHeaderFields()
-
-        for (var key in headerFields) {
-          header[key] = headerFields[key][0]
-        }
-
+        httpConnection.getHeaderFields().forEach(function(key, list) {
+          if (list) {
+            if (key === null) {
+              key = 'null'
+            }
+            header[key] = list.size() === 1 ? list.get(0) : list.toArray()
+          }
+        })
         var data = fluent.getContent(httpConnection)
         var isJSON = data && (header['Content-Type'] && header['Content-Type'].indexOf('application/json') >= 0)
-
         body = isJSON ? JSON.parse(data) : data
       } catch (e) {
         exc = e
       }
-
       return { code: httpCode, body: body, headers: header, exc: exc }
     }
   }
-
   return fluent
 }
 
 function copyStreams(inStream, outStream) {
-  let buffer = new Byte(1024)
   let len
+  let buffer = new Byte(1024)
   while ((len = inStream.read(buffer)) !== -1) {
     outStream.write(buffer, 0, len)
   }
@@ -220,7 +218,7 @@ var HTTPClient = {
   put: function(url, params) { return mountHttpRequest('PUT', url, params) },
   delete: function(url, params) { return mountHttpRequest('DELETE', url, params) }
 }
-
+HTTPClient.version = '1.4.1'
 exports = HTTPClient
 /*
 print ("\n",

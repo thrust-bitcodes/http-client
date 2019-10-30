@@ -1,13 +1,14 @@
 {
-  "description": "HTTP client module",
+  "description": "HTTP client bitcode",
   "name": "http-client",
   "path": "index.js",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "Nery Jr",
   "contributors": [
     "Cleverson Puche",
     "Bruno Machado",
-    "Leonardo Delfinio"
+    "Leonardo Delfino",
+    "Ozair Jr"
   ],
   "dependencies": []
 }
