@@ -7,6 +7,16 @@ var SSLContext = Java.type('javax.net.ssl.SSLContext')
 var X509TrustManager = Java.type('javax.net.ssl.X509TrustManager')
 var SecureRandom = Java.type('java.security.SecureRandom')
 
+function getBytes(str, charset) {
+  str = str || ''
+  charset = charset || 'utf-8'
+  if (!str.getBytes) {
+    let StringHelper = Java.type('br.com.softbox.thrust.api.ThrustStringHelper')
+    return StringHelper.getBytes(str, charset)
+  }
+  return str.getBytes(charset)
+}
+
 function mountHttpRequest(method, url, reqParams) {
   var params = reqParams
   var properties = {
@@ -122,7 +132,9 @@ function mountHttpRequest(method, url, reqParams) {
         let isBinary = properties['Content-Type'].indexOf('application/zip') > -1 || properties['Content-Type'].indexOf('application/octet-stream') > -1
 
         if (!params || typeof params === 'string') {
-          output.write((params || '').getBytes(properties.charset))
+          var str = params || ''
+          var outBuffer = getBytes(params, properties.charset)
+          output.write(outBuffer)
         } else if (isBinary) {
           copyStreams(params, output)
         }
