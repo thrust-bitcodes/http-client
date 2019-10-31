@@ -28,7 +28,7 @@ module.exports = {
 
 
   "rules": {
-    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "indent": ["error", 4, { "SwitchCase": 2 }],
     "no-new-func": "off",
     "semi": ["error", "never"],
     "accessor-pairs": "error",
